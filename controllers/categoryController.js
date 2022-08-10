@@ -1,8 +1,19 @@
+const async = require('async');
 const Category = require('../models/category');
+const Item = require('../models/item');
 
 // Display site home page
 exports.index = function (req, res) {
-  res.send('not implemented: Site Home Page');
+  async.parallel({
+    item_count(callback) {
+      Item.countDocuments({}, callback);
+    },
+    category_count(callback) {
+      Category.countDocuments({}, callback);
+    },
+  }, (err, results) => {
+    res.render('index', { title: 'Food Bank Inventory Home', error: err, data: results });
+  });
 };
 
 // Display list of all Categories.
