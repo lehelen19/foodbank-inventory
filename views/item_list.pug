@@ -1,0 +1,13 @@
+extends layout
+
+block content 
+  h1=title 
+  dl 
+    each item in item_list 
+      dt
+        a(href=item.url) #{item.name.toUpperCase()}
+        dd Category: #{item.category.name}
+        dd Description: #{item.description}
+        dd Quantity: #{item.quantity}
+    else 
+      li There are no food items available.

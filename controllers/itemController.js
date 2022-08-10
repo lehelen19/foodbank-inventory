@@ -1,13 +1,14 @@
 const Item = require('../models/item');
 
-// Display list of all Categories.
+// Display list of all Items
 exports.item_list = function (req, res, next) {
   Item.find()
     .sort([['name', 'ascending']])
+    .populate('category')
     .exec((err, listItems) => {
       if (err) { return next(err); }
       // Success: render
-      res.render('item_list', { title: 'Item List', item_list: listItems });
+      res.render('item_list', { title: 'Available Food Items', item_list: listItems });
     });
 };
 
