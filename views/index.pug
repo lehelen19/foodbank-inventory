@@ -4,12 +4,12 @@ block content
   h1= title
   p Welcome to the #[em Food Bank Inventory], where you can see what food items are available at your local food bank.
 
-  h1 Dynamic content 
+  h3 Categories
 
   if error 
     p Error getting dynamic content 
   else 
-    p The food bank has the following inventory count: 
-    ul 
-      li #[strong Categories:] !{data.category_count}
-      li #[strong Food Items:] !{data.item_count}
+    div(class='container-fluid')
+      each name in data.category_names
+        a(href=`/catalog/${name._id}`) !{h3=name.name}
+        hr

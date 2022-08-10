@@ -5,11 +5,8 @@ const Item = require('../models/item');
 // Display site home page
 exports.index = function (req, res) {
   async.parallel({
-    item_count(callback) {
-      Item.countDocuments({}, callback);
-    },
-    category_count(callback) {
-      Category.countDocuments({}, callback);
+    category_names(callback) {
+      Category.find({}, { name: 1 }, callback);
     },
   }, (err, results) => {
     res.render('index', { title: 'Food Bank Inventory Home', error: err, data: results });
