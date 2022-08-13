@@ -25,8 +25,31 @@ exports.category_list = function (req, res, next) {
 };
 
 // Display detail page for a specific category
-exports.category_detail = function (req, res) {
-  res.send('Not implemented: Category Detail + req.params.id');
+exports.category_detail = function (req, res, next) {
+  async.parallel({
+    category(callback) {
+      Category.findById(req.params.id)
+        .exec(callback);
+    },
+    category_items(callback) {
+      Item.find({ category: req.params.id })
+        .exec(callback);
+    },
+  }, (err, results) => {
+    if (err) { return next(err); } // Error in API usage
+    if (results.category == null) {
+      // No results for specified category
+      const error = new Error('Category not found');
+      error.status = 404;
+      return next(error);
+    }
+    // Successful, so render
+    res.render('category_detail', {
+      title: 'Category Detail',
+      category: results.category,
+      category_items: results.category_items,
+    });
+  });
 };
 
 // Display Category create form on GET

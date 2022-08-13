@@ -1,0 +1,25 @@
+extends layout
+
+block content 
+
+  h1 #{category.name} Items
+
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Currently available:
+
+    dl
+      each item in category_items
+        dt 
+          a(href=item.url) #{item.name}
+          |
+          | (#{item.quantity})
+      
+      else 
+        p There are no #{category.name} items currently available.
+  
+  hr
+  p
+    a(href=category.url+'/update') Update category
+  p 
+    a(href=category.url+'/delete') Delete category
