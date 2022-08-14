@@ -1,0 +1,13 @@
+extends layout 
+
+block content 
+  h1  #{item.name}
+  p #[strong Category]: #{item.category.name}
+  p #[strong Description]: #{item.description}
+  p #[strong Number available]: #{item.quantity}
+
+  hr
+  p 
+    a(href=item.url+'/update') Update food item
+  p 
+    a(href=item.url+'/delete') Delete food item

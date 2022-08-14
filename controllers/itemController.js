@@ -1,3 +1,4 @@
+const async = require('async');
 const Item = require('../models/item');
 
 // Display list of all Items
@@ -13,8 +14,22 @@ exports.item_list = function (req, res, next) {
 };
 
 // Display detail page for a specific item
-exports.item_detail = function (req, res) {
-  res.send('Not implemented: item Detail + req.params.id');
+exports.item_detail = function (req, res, next) {
+  async.parallel({
+    item(callback) {
+      Item.findById(req.params.id)
+        .populate('category')
+        .exec(callback);
+    },
+  }, (err, results) => {
+    if (err) { return next(err); }
+    if (results.item == null) {
+      const error = new Error('Item not found');
+      error.status = 404;
+      return next(error);
+    }
+    res.render('item_detail', { title: 'Food Item Detail', item: results.item });
+  });
 };
 
 // Display item create form on GET

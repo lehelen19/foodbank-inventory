@@ -11,5 +11,5 @@ block content
   else 
     div(class='container-fluid')
       each name in data.category_names
-        a(href=`/catalog/${name._id}`) #{name.name}
+        a(href=`/catalog/category/${name._id}`) #{name.name}
         hr
