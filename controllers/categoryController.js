@@ -1,4 +1,6 @@
+/* eslint-disable camelcase */
 const async = require('async');
+const { body, validationResult } = require('express-validator');
 const Category = require('../models/category');
 const Item = require('../models/item');
 
@@ -20,7 +22,7 @@ exports.category_list = function (req, res, next) {
     .exec((err, listCategories) => {
       if (err) { return next(err); }
       // Success: render
-      res.render('category_list', { title: 'Category List', category_list: listCategories });
+      res.render('category_list', { title: 'Available Categories', category_list: listCategories });
     });
 };
 
@@ -53,14 +55,51 @@ exports.category_detail = function (req, res, next) {
 };
 
 // Display Category create form on GET
-exports.category_create_get = function (req, res) {
-  res.send('Not implemented: Category create GET');
+exports.category_create_get = function (req, res, next) {
+  res.render('category_form', { title: 'Create category' });
 };
 
 // Handle Category create on POST
-exports.category_create_post = function (req, res) {
-  res.send('not implemented: Category create POST');
-};
+exports.category_create_post = [
+  // Validate and sanitize fields
+  body('name', 'Category name required').trim().isLength({ min: 1 }).escape()
+    .withMessage('Category name must be specified')
+    .isAlphanumeric()
+    .withMessage('Category name must only contain alphanumeric characters'),
+  body('description').trim().isLength({ min: 1, max: 100 }).escape()
+    .withMessage('Category description must be specified'),
+  (req, res, next) => {
+    // Extract validation errors from a request
+    const errors = validationResult(req);
+
+    // Create a new Category object with escaped and trimmed data
+    const category = new Category({ name: req.body.name, description: req.body.description });
+
+    if (!errors.isEmpty()) {
+      // Errors present; render form again with sanitized values/error messages
+      res.render('category_form', {
+        title: 'Create category',
+        category,
+        errors: errors.array(),
+      });
+    } else {
+      // Form data is valid (client-side)
+      // Check if Category with same name already exists
+      Category.findOne({ name: req.body.name }).exec((err, found_category) => {
+        if (err) { return next(err); }
+        if (found_category) {
+          res.redirect(found_category.url);
+        } else {
+          category.save((error) => {
+            if (error) { return next(error); }
+            // Successfully save new category; redirect to its detail page
+            res.redirect(category.url);
+          });
+        }
+      });
+    }
+  },
+];
 
 // Display Category delete form on GET
 exports.category_delete_get = function (req, res) {
