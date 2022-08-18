@@ -37,14 +37,11 @@ exports.item_detail = function (req, res, next) {
 // Display item create form on GET
 exports.item_create_get = function (req, res, next) {
   // Get categories for adding to our food items
-  async.parallel({
-    categories(callback) {
-      Category.find(callback);
-    },
-  }, (err, results) => {
-    if (err) { return next(err); }
-    res.render('item_form', { title: 'Create Food Item', categories: results.categories });
-  });
+  Category.find({}, 'name')
+    .exec((err, categories) => {
+      if (err) { return next(err); }
+      res.render('item_form', { title: 'Create Food Item', categories });
+    });
 };
 
 // Handle item create on POST
@@ -70,28 +67,22 @@ exports.item_create_post = [
     if (!errors.isEmpty()) {
       // If there are errors, render the form again with sanitized values and error messages
       // Get all categories for form
-      async.parallel(
-        {
-          categories(callback) {
-            Category.find(callback);
-          },
-        },
-        (err, results) => {
-          if (err) { return next(err); }
-
-          res.render('item_form', {
-            title: 'Create a Food Item',
-            categories: results.categories,
-            errors: errors.array(),
-          });
-        },
-      );
-    }
+      Category.find({}, 'name').exec((err, categories) => {
+        if (err) { return next(err); }
+        res.render('item_form', {
+          title: 'Create a Food Item',
+          categories,
+          item,
+          errors: errors.array(),
+        });
+      });
+    } else {
     // Form data is valid
-    item.save((err) => {
-      if (err) { return next(err); }
-      res.redirect(item.url);
-    });
+      item.save((err) => {
+        if (err) { return next(err); }
+        res.redirect(item.url);
+      });
+    }
   },
 ];
 
