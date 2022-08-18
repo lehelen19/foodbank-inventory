@@ -96,13 +96,25 @@ exports.item_create_post = [
 ];
 
 // Display item delete form on GET
-exports.item_delete_get = function (req, res) {
-  res.send('Not implemented: item delete GET');
+exports.item_delete_get = function (req, res, next) {
+  Item.findById(req.params.id).populate('category')
+    .exec((err, item) => {
+      if (err) { return next(err); }
+      if (item == null) {
+        res.redirect('/catalog/items');
+      }
+      // Render form upon found item
+      res.render('item_delete', { title: `Delete ${item.name}`, item });
+    });
 };
 
 // Display item delete form on POST
-exports.item_delete_post = function (req, res) {
-  res.send('Not implemented: item delete POST');
+exports.item_delete_post = function (req, res, next) {
+  Item.findByIdAndRemove(req.body.itemid, (err) => {
+    if (err) { return next(err); }
+    // Success
+    res.redirect('/catalog/items');
+  });
 };
 
 // Display item update form on GET
