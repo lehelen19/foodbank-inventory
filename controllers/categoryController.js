@@ -158,11 +158,51 @@ exports.category_delete_post = function (req, res, next) {
 };
 
 // Display Category update form on GET
-exports.category_update_get = function (req, res) {
-  res.send('Not implemented: Category update GET');
+exports.category_update_get = function (req, res, next) {
+  Category.findById(req.params.id).exec((err, category) => {
+    if (err) { return next(err); }
+    if (category == null) {
+      const error = new Error('Category not found!');
+      error.status = 404;
+      return next(error);
+    }
+    // Success
+    res.render('category_form', {
+      title: 'Update Category', category,
+    });
+  });
 };
 
 // Display Category update form on POST
-exports.category_update_post = function (req, res) {
-  res.send('Not implemented: Category update POST');
-};
+exports.category_update_post = [
+  // Validate and sanitize fields
+  body('name', 'Category name required').trim().isLength({ min: 1 }).escape()
+    .withMessage('Category name must be specified'),
+  body('description').trim().isLength({ min: 1, max: 100 }).escape()
+    .withMessage('Category description must be specified'),
+
+  // Process request
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    // Create new Category object
+    const category = new Category({
+      name: req.body.name,
+      description: req.body.description,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render('category_form', {
+        title: 'Update Category', category, errors: errors.array(),
+      });
+    } else {
+      // Valid form data
+      Category.findByIdAndUpdate(req.params.id, category, {}, (err, thecategory) => {
+        if (err) { return next(err); }
+        // Successfully updated category
+        res.redirect(thecategory.url);
+      });
+    }
+  },
+];
