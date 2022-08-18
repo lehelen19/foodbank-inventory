@@ -11,7 +11,9 @@ exports.index = function (req, res) {
       Category.find({}, { name: 1 }, callback);
     },
   }, (err, results) => {
-    res.render('index', { title: 'Food Bank Inventory Home', error: err, data: results });
+    res.render('index', {
+      title: 'Food Bank Inventory Home', error: err, data: results, user: req.user,
+    });
   });
 };
 
