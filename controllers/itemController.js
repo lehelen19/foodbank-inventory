@@ -105,11 +105,71 @@ exports.item_delete_post = function (req, res, next) {
 };
 
 // Display item update form on GET
-exports.item_update_get = function (req, res) {
-  res.send('Not implemented: item update GET');
+exports.item_update_get = function (req, res, next) {
+  // Get form fields for item and category
+  async.parallel({
+    item(callback) {
+      Item.findById(req.params.id).populate('category').exec(callback);
+    },
+    categories(callback) {
+      Category.find(callback);
+    },
+  }, (err, results) => {
+    if (err) { return next(err); }
+    if (results.item == null) {
+      const error = new Error('Food item not found');
+      error.status = 404;
+      return next(error);
+    }
+    // Success
+    res.render('item_form', {
+      title: 'Update Food Item', categories: results.categories, item: results.item,
+    });
+  });
 };
 
 // Display item update form on POST
-exports.item_update_post = function (req, res) {
-  res.send('Not implemented: item update POST');
-};
+exports.item_update_post = [
+  // Validate and sanitize fields
+  body('name', 'Food item name must not be empty').trim().isLength({ min: 1 }).escape(),
+  body('category', 'Category must not be empty').trim().isLength({ min: 1 }).escape(),
+  body('quantity', 'Quantity must not be empty').trim().isLength({ min: 1 }).isNumeric()
+    .escape(),
+  body('description').trim().escape(),
+
+  // Process request
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    // Create new Item instance
+    const item = new Item({
+      name: req.body.name,
+      category: req.body.category,
+      quantity: req.body.quantity,
+      description: req.body.description,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      // If there are errors, render the form again with sanitized values and error messages
+      // Get all categories for form
+      Category.find({}, 'name').exec((err, categories) => {
+        if (err) { return next(err); }
+        res.render('item_form', {
+          title: 'Update Food Item',
+          categories,
+          item,
+          errors: errors.array(),
+        });
+      });
+    } else {
+    // Form data is valid
+      Item.findByIdAndUpdate(req.params.id, item, {}, (err, theitem) => {
+        if (err) {
+          return next(err);
+        }
+        res.redirect(theitem.url);
+      });
+    }
+  },
+];
