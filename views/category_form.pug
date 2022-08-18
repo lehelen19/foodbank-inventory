@@ -5,10 +5,11 @@ block content
 
   form(method='POST' action='')
     div.form-group
-      label(for='category_name') Category Name: 
+      label(for='name') Category Name: 
       input#name.form-control(type='text' placeholder='Category name' name='name' required='true' value=(undefined===category ? '' : category.name) )
+    div.form-group
       label(for='description') Description: 
-      input#description.form-control(type='text' placeholder='Category description' name='description' required='true' value=(undefined===category ? '': category.description) )
+      input#description.form-control(type='text' placeholder='Category description' name='description' value=(undefined===category ? '': category.description) )
     button.btn.btn-primary(type='submit') Submit 
     
     if errors 

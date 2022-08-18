@@ -1,0 +1,36 @@
+extends layout
+
+block content
+  h1=title
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='name') Food Item Name: 
+      input#name.form-control(type='text' placeholder='Food item name' name='name' required='true' value=(undefined===item ? '' : item.name) )
+    div.form-group
+      label(for='category') Category:
+      select#category.form-control(type='select' placeholder='Select category' name='category' required='true')
+        - categories.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+        for category in categories 
+          if item 
+            option(
+              value=category._id 
+              selected=(
+                category._id.toString()==item.category._id 
+                || category._id.toString()==item.category 
+              ) ? 'selected' : false
+            ) #{category.name}
+          else 
+            option(value=category._id) #{category.name}
+    div.form-group
+      label(for='description') Description (optional): 
+      input#description.form-control(type='text' placeholder='Food item description' name='description' value=(undefined===item ? '': item.description) )
+    div.form-group
+      label(for='quantity') Quantity: 
+      input#quantity.form-control(type='number' placeholder='Food item quantity' name='quantity' value=(undefined===item ? 0 : item.quantity) )
+    button.btn.btn-primary(type='submit') Submit 
+    
+    if errors 
+      ul 
+        for error in errors 
+          li!= error.msg
