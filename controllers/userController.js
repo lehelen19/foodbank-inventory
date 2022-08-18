@@ -33,3 +33,12 @@ exports.log_in_post = [
     res.redirect('/');
   },
 ];
+
+// Handle User logout form on GET
+exports.log_out_get = function (req, res, next) {
+  req.logout((err) => {
+    if (err) { return next(err); }
+  });
+  // Success
+  res.redirect('/');
+};

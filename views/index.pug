@@ -3,12 +3,17 @@ extends layout
 block content
   h1= title
   if user 
-    h1 Welcome back #{user.username}!
-  p Welcome to the #[em Food Bank Inventory], where you can see what food items are available at your local food bank.
-    | 
-    a(href='/users/sign-up') Sign up here if you are an employee.
-    | 
-    a(href='/users/log-in') Log in here if you are already registered.
+    h2 Welcome back, #{user.username}!
+    div(style='margin-bottom: 20px')
+      a(href='/users/log-out') Sign out
+
+  else
+    p Welcome to the #[em Food Bank Inventory], where you can see what food items are available at your local food bank.
+      | 
+      a(href='/users/sign-up') Sign up here if you are an employee.
+      | 
+      a(href='/users/log-in') Log in here if you are already registered.
+
   h3 Categories
 
   if error 
