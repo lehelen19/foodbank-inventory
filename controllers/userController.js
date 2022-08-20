@@ -1,6 +1,7 @@
 const async = require('async');
 const { body, validationResult } = require('express-validator');
 const passport = require('passport');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 // Display User create form on GET
@@ -11,13 +12,17 @@ exports.sign_up_get = function (req, res, next) {
 // Handle User create on POST
 exports.sign_up_post = function (req, res, next) {
   // Create a new User object
-  const user = new User({
-    username: req.body.username,
-    password: req.body.password,
-  }).save((err) => {
+  bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
     if (err) { return next(err); }
-    // Upon success
-    res.redirect('/');
+    // Create and store new user upon success of hashing password
+    const user = new User({
+      username: req.body.username,
+      password: hashedPassword,
+    }).save((err) => {
+      if (err) { return next(err); }
+      // Upon success
+      res.redirect('/');
+    });
   });
 };
 
@@ -28,7 +33,7 @@ exports.log_in_get = function (req, res, next) {
 
 // Handle User login form on POST
 exports.log_in_post = [
-  passport.authenticate('local', { failureRedirect: '/login' }),
+  passport.authenticate('local', { failureRedirect: '/' }),
   function (req, res, next) {
     res.redirect('/');
   },
