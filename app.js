@@ -8,6 +8,8 @@ const LocalStrategy = require('passport-local').Strategy;
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bcrypt = require('bcryptjs');
+const compression = require('compression');
+const helmet = require('helmet');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
@@ -25,6 +27,9 @@ const usersRouter = require('./routes/users');
 const catalogRouter = require('./routes/catalog');
 
 const app = express();
+
+app.use(compression()); // Compress all routes
+app.use(helmet());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
