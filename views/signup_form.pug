@@ -10,6 +10,9 @@ block content
     div.form-group
       label(for='password') Password: 
       input#password.form-control(type='password' placeholder='password' name='password' required='true' value=(undefined===user ? '' : user.password))
+    div.form-group
+      label(for='secret') Employee Secret: 
+      input#secret.form-control(type='password' placeholder='secret' name='secret' required='true' value=(undefined===user ? '' : user.secret))
     button.btn.btn-primary(type='submit') Sign Up
 
     if errors 

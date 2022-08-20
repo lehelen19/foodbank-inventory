@@ -20,6 +20,7 @@ exports.sign_up_post = [
   body('password', 'Password required').trim()
     .isLength({ min: 5 }).withMessage('Password must be at least 5 characters')
     .escape(),
+  body('secret', 'Secret required').escape(),
 
   // Process request
   (req, res, next) => {
@@ -27,8 +28,11 @@ exports.sign_up_post = [
     if (!errors.isEmpty()) {
       // If errors, render signup form again
       res.render('signup_form', { errors: errors.array() });
+    } else if (req.body.secret !== 'foodbanksrock') {
+      // If secret key is incorrect, render signup form again
+      res.render('signup_form');
     } else {
-    // Hash the password
+      // Hash the password
       bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
         if (err) { return next(err); }
         // Create and store new user upon success of hashing password

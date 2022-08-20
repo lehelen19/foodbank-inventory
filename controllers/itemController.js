@@ -11,7 +11,7 @@ exports.item_list = function (req, res, next) {
     .exec((err, listItems) => {
       if (err) { return next(err); }
       // Success: render
-      res.render('item_list', { title: 'Available Food Items', item_list: listItems });
+      res.render('item_list', { title: 'Available Food Items', item_list: listItems, user: req.user });
     });
 };
 
@@ -26,7 +26,7 @@ exports.item_detail = function (req, res, next) {
         error.status = 404;
         return next(error);
       }
-      res.render('item_detail', { item });
+      res.render('item_detail', { item, user: req.user });
     });
 };
 
@@ -36,7 +36,7 @@ exports.item_create_get = function (req, res, next) {
   Category.find({}, 'name')
     .exec((err, categories) => {
       if (err) { return next(err); }
-      res.render('item_form', { title: 'Create Food Item', categories });
+      res.render('item_form', { title: 'Create Food Item', categories, user: req.user });
     });
 };
 
@@ -91,7 +91,7 @@ exports.item_delete_get = function (req, res, next) {
         res.redirect('/catalog/items');
       }
       // Render form upon found item
-      res.render('item_delete', { title: 'Delete Item', item });
+      res.render('item_delete', { title: 'Delete Item', item, user: req.user });
     });
 };
 
@@ -123,7 +123,7 @@ exports.item_update_get = function (req, res, next) {
     }
     // Success
     res.render('item_form', {
-      title: 'Update Food Item', categories: results.categories, item: results.item,
+      title: 'Update Food Item', categories: results.categories, item: results.item, user: req.user,
     });
   });
 };

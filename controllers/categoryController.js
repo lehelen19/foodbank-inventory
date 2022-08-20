@@ -24,7 +24,7 @@ exports.category_list = function (req, res, next) {
     .exec((err, listCategories) => {
       if (err) { return next(err); }
       // Success: render
-      res.render('category_list', { title: 'Available Categories', category_list: listCategories });
+      res.render('category_list', { title: 'Available Categories', category_list: listCategories, user: req.user });
     });
 };
 
