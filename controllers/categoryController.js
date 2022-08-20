@@ -52,13 +52,14 @@ exports.category_detail = function (req, res, next) {
       title: 'Category Detail',
       category: results.category,
       category_items: results.category_items,
+      user: req.user,
     });
   });
 };
 
 // Display Category create form on GET
 exports.category_create_get = function (req, res, next) {
-  res.render('category_form', { title: 'Create category' });
+  res.render('category_form', { title: 'Create category', user: req.user });
 };
 
 // Handle Category create on POST
@@ -122,6 +123,7 @@ exports.category_delete_get = function (req, res, next) {
         title: 'Delete Category',
         category: results.category,
         category_items: results.category_items,
+        user: req.user,
       });
     },
   );
@@ -170,7 +172,9 @@ exports.category_update_get = function (req, res, next) {
     }
     // Success
     res.render('category_form', {
-      title: 'Update Category', category,
+      title: 'Update Category',
+      category,
+      user: req.user,
     });
   });
 };

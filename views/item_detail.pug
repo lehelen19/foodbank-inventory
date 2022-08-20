@@ -6,8 +6,9 @@ block content
   p #[strong Description]: #{item.description}
   p #[strong Number available]: #{item.quantity}
 
-  hr
-  p 
-    a(href=item.url+'/update') Update food item
-  p 
-    a(href=item.url+'/delete') Delete food item
+  if user
+    hr
+    p 
+      a(href=item.url+'/update') Update food item
+    p 
+      a(href=item.url+'/delete') Delete food item

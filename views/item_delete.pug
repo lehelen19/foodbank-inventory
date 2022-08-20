@@ -1,12 +1,15 @@
 extends layout
 
 block content
-  h1 #{title}: #{item.name}
+  if user
+    h1 #{title}: #{item.name}
 
-  p Do you really want to delete this Food Item?
+    p Do you really want to delete this Food Item?
 
-  form(method='POST' action='')
-    div.form-group
-      input#itemid.form-control(type='hidden',name='itemid', required='true', value=item._id )
+    form(method='POST' action='')
+      div.form-group
+        input#itemid.form-control(type='hidden',name='itemid', required='true', value=item._id )
 
-    button.btn.btn-primary(type='submit') Delete
+      button.btn.btn-primary(type='submit') Delete
+  else 
+    h1 Sorry, you do not have access to this page.
