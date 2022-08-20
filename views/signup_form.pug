@@ -11,3 +11,8 @@ block content
       label(for='password') Password: 
       input#password.form-control(type='password' placeholder='password' name='password' required='true' value=(undefined===user ? '' : user.password))
     button.btn.btn-primary(type='submit') Sign Up
+
+    if errors 
+      ul 
+        for error in errors 
+          li!= error.msg

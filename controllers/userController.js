@@ -10,21 +10,40 @@ exports.sign_up_get = function (req, res, next) {
 };
 
 // Handle User create on POST
-exports.sign_up_post = function (req, res, next) {
-  // Create a new User object
-  bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
-    if (err) { return next(err); }
-    // Create and store new user upon success of hashing password
-    const user = new User({
-      username: req.body.username,
-      password: hashedPassword,
-    }).save((err) => {
-      if (err) { return next(err); }
-      // Upon success
-      res.redirect('/');
-    });
-  });
-};
+exports.sign_up_post = [
+  // Validate and sanitize fields
+  body('username', 'Username required').trim()
+    .isLength({ min: 5 }).withMessage('Username must be at least 5 characters')
+    .isAlphanumeric()
+    .withMessage('Username characters must only be alphanumeric')
+    .escape(),
+  body('password', 'Password required').trim()
+    .isLength({ min: 5 }).withMessage('Password must be at least 5 characters')
+    .escape(),
+
+  // Process request
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      // If errors, render signup form again
+      res.render('signup_form', { errors: errors.array() });
+    } else {
+    // Hash the password
+      bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
+        if (err) { return next(err); }
+        // Create and store new user upon success of hashing password
+        const user = new User({
+          username: req.body.username,
+          password: hashedPassword,
+        }).save((err) => {
+          if (err) { return next(err); }
+          // Upon success
+          res.redirect('/');
+        });
+      });
+    }
+  },
+];
 
 // Display User login form on GET
 exports.log_in_get = function (req, res, next) {
